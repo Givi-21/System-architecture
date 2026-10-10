@@ -12,6 +12,7 @@ Containers:
 
   Network:
   > name - front_net
+> 
   > subnet - 192.168.20.0/24
 
 DNS server binds the Domain Name to the proxy server. 
