@@ -20,6 +20,7 @@ Web server by itself is completely isolated for security.
 
 for better security, you can change the owner of ./dsn_server/bind9 folder:
 > sudo chown -R root:bind ./bind9
+> 
 > sudo chmod -R 644 ./bind9
 
 Using the script. 
