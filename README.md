@@ -23,7 +23,6 @@ sudo chmod -R 644 ./bind9
 Using the script. 
 script version - v1.1
 run: 
-
 -> manage.py --help to see available flags for additional functionalities.
 
 flags:
