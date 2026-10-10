@@ -37,6 +37,8 @@ flags:
   - stop_all: Stop all containers gracefully.
   - list: list all available containers with the path of their compose files.
 
+> subcommands that run containers, they run by composing files only. 
+
 > Note, if you use Windows for testing this project, you must have WSL2 installed alongside docker. WSL2 is logically on an isolated network, which
    makes it natively diffucult to optimize it for this specific OS. you cannot get web page via curl or a web browser by domain. For resolving this issue, you can make custom domain for the web server in
    **C:\Windows\System32\drivers\etc\hosts** as specified below:
