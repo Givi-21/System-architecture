@@ -39,7 +39,6 @@ flags:
    makes it natively diffucult to optimize it for this specific OS. you cannot get web page via curl or a web browser by domain. For resolving this issue, you can make custom domain for the web server in
    **C:\Windows\System32\drivers\etc\hosts** as specified below:
 
-	 127.0.0.1   homelab.lan(or any other domain).
-
-   for additional testing you can access a container's terminal via docker exec -ti <container name> sh.
+	 127.0.0.1   homelab.lan.
+   for additional testing you can access a container's terminal via **docker exec -ti <container name> sh**.
 
