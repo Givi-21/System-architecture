@@ -35,11 +35,11 @@ flags:
   - stop_all: Stop all containers gracefully.
   - list: list all available containers with the path of their compose files.
 
-!! Note, if you use Windows for testing the project, you must have WSL2 installed alongside docker. WSL2 is logically in an isolated network, which
-   makes it difficult to access natively the web server through reverse proxy via a browser for instance. For resolving this issue, you can make custom domain for the web server in
+> Note, if you use Windows for testing this project, you must have WSL2 installed alongside docker. WSL2 is logically on an isolated network, which
+   makes it natively diffucult to optimize it for this specific OS. you cannot get web page via curl or a web browser by domain. For resolving this issue, you can make custom domain for the web server in
    C:\Windows\System32\drivers\etc\hosts as specified below:
 
 	-> 127.0.0.1   homelab.lan(or any other domain).
 
    for additional testing you can access a container's terminal via docker exec -ti <container name> sh.
-!!
+
