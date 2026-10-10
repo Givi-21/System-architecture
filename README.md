@@ -4,13 +4,13 @@ System architecture & Instruction for deploying
 The project includes docker containers and one script for managing them all together.
 
 Containers:
-- DNS Server(internetsystemsconsortium/bind9:9.18)
+  - DNS Server(internetsystemsconsortium/bind9:9.18)
   
 ---------One docker compose file---------
   - Web Server(Alpine, Nginx)
   - Reverse proxy(Alpine, Nginx)
 
-  Network:
+  Network:\n
     - name: front_net
     - Subnet: 192.168.20.0/24
 
@@ -29,9 +29,9 @@ flags:
   - all: Run all containers.
   - start: start a specific container(requires container name).
   - stop: stop a specific container(requires container name).
+  - status: see if a container is active(requires container name).
   - stop_all: Stop all containers gracefully.
   - list: list all available containers with the path of their compose files.
-  - status: see if a container is active(requires container name).
 
 !! Note, if you use Windows for testing the project, you must have WSL2 installed alongside docker. WSL2 is logically in an isolated network, which
    makes it difficult to access natively the web server through reverse proxy via a browser for instance. For resolving this issue, you can make custom domain for the web server in
