@@ -1,7 +1,7 @@
 #/*
 #   ** Writen by Givi **
 #
-#   This code works for composing and managing ocker containers only. 
+#   This code works for composing and managing docker containers only. 
 #
 #   This program requires you to install only one external library - psutil, which's responsible, 
 #   in this case for identifying if docker desktop pocess is running.
