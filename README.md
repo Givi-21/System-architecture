@@ -42,5 +42,5 @@ flags:
    **C:\Windows\System32\drivers\etc\hosts** as specified below:
 
 	 127.0.0.1   homelab.lan.
-   for additional testing you can access a container's terminal via **docker exec -ti <container name> sh**.
+   for additional testing you can access a container's terminal via **docker exec -ti _<container_name>_ sh**.
 
