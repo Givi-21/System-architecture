@@ -57,7 +57,6 @@ def run_container(args, exec_path, containers):
     try:
         path = containers[args.container]
 
-        # Checking if docker saved compose file paths as WSL type path. 
         running_container = subprocess.run([exec_path, "compose", "-f", path, "up", "-d"], 
             capture_output=True, text=True
         )
@@ -166,7 +165,6 @@ def wsl_to_windows(path):
     return path
 
 
-# "Containers" must be a dictionary.
 def get_container_info():
     get_ids = subprocess.run(["docker", "ps", "-q", "-a"], text=True, capture_output=True)
     if get_ids.stdout is None:
@@ -212,6 +210,7 @@ def main(args):
     cli_exec_path = shutil.which("docker") 
     
     # Default docker-desktop paths.
+    # Change it if you have custom path.
     system_desktop_exec_paths = {
         "Linux": "/opt/docker-desktop/bin/docker-desktop",
         "Darwin": "/Applications/Docker.app", 
@@ -273,10 +272,8 @@ if __name__ == "__main__":
         description="Custom script to safely run all containers and check for applied security settings.",
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
-
-    # Main parser
-    #parser.add_argument("container", nargs="?", default=None, type=str, help="Name of a container.")
-    subparsers = parser.add_subparsers(dest="command", required=False) # 'command' is a placeholder of a user's subcommand.
+    
+    subparsers = parser.add_subparsers(dest="command", required=False) 
 
     base_argument = argparse.ArgumentParser(add_help=False)
     base_argument.add_argument(
