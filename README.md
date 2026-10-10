@@ -6,7 +6,7 @@ The project includes docker containers and one script for managing them all toge
 Containers:
   - DNS Server(internetsystemsconsortium/bind9:9.18)
   
----------One docker compose file---------
+**One docker compose file**
   - Web Server(Alpine, Nginx)
   - Reverse proxy(Alpine, Nginx)
 
@@ -37,9 +37,9 @@ flags:
 
 > Note, if you use Windows for testing this project, you must have WSL2 installed alongside docker. WSL2 is logically on an isolated network, which
    makes it natively diffucult to optimize it for this specific OS. you cannot get web page via curl or a web browser by domain. For resolving this issue, you can make custom domain for the web server in
-   C:\Windows\System32\drivers\etc\hosts as specified below:
+   **C:\Windows\System32\drivers\etc\hosts** as specified below:
 
-	-> 127.0.0.1   homelab.lan(or any other domain).
+	 127.0.0.1   homelab.lan(or any other domain).
 
    for additional testing you can access a container's terminal via docker exec -ti <container name> sh.
 
