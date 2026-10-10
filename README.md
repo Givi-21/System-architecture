@@ -5,7 +5,7 @@ The project includes docker containers and one script for managing them all toge
 
 Containers:
 - DNS Server(internetsystemsconsortium/bind9:9.18)
-- 
+  
 ---------One docker compose file---------
   - Web Server(Alpine, Nginx)
   - Reverse proxy(Alpine, Nginx)
