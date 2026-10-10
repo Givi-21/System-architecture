@@ -1,0 +1,37 @@
+services: 
+  web_app: 
+    image: nginx:alpine
+    container_name: web_server
+    networks:
+      - front_net
+
+    dns:
+      - 192.168.20.5
+
+    volumes:
+      # RO specifies the rule of readonly, so it doesn't modify in host machine
+      - ./web_conf/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./web_conf/index.html:/var/www/html/main/index.html:ro
+      - ./web_conf/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+  proxy:
+    image: nginx:alpine
+    container_name: proxy_server
+    ports:
+      - "80:80"
+
+    networks: 
+      - front_net
+
+    dns:
+      - 192.168.20.5
+
+    depends_on:
+      - web_app
+
+    volumes:
+      - ./proxy_conf/nginx.conf:/etc/nginx/nginx.conf:ro
+
+networks:
+  front_net:
+    external: true

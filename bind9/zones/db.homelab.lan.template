@@ -1,0 +1,24 @@
+;
+; BIND reverse data file for local loopback interface
+;
+$TTL	604800
+@	IN	SOA	ns1.homelab.lan. root.homelab.lan. (
+			 202609202		; Serial - Need change after every update, so that slave servers follow it too(?)
+			 604800		; Refresh
+			  86400		; Retry
+			2419200		; Expire
+			 604800 )	; Negative Cache TTL
+;
+
+; Primary DNS server name
+ns1	    IN	NS	ns1.homelab.lan.
+
+; Pointing the DNS server name to it's IP
+ns1	    IN	A	__HOST_IP__
+
+; IP for the website (The root DOMAIN)
+@	    IN	A   __HOST_IP__
+
+; Pointing the web server to it's IP
+www		        IN	A	__HOST_IP__
+homelab.lan.	IN	A	__HOST_IP__
