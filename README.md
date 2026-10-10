@@ -11,7 +11,8 @@ Containers:
   - Reverse proxy(Alpine, Nginx)
 
   Network:
-  > name - front_net & Subnet - 192.168.20.0/24
+  > name - front_net
+  > subnet - 192.168.20.0/24
 
 DNS server binds the Domain Name to the proxy server. 
 Web server by itself is completely isolated for security.
@@ -23,7 +24,7 @@ sudo chmod -R 644 ./bind9
 Using the script. 
 script version - v1.1
 run: 
--> manage.py --help to see available flags for additional functionalities.
+> manage.py --help to see available flags for additional functionalities.
 
 flags:
   - all: Run all containers.
