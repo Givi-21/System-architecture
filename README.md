@@ -1,14 +1,14 @@
 # System-architecture
-System architecture and instruction for deploying
-
 System architecture & Instruction for deploying
 
 The project includes docker containers and one script for managing them all together.
 
 Containers:
+- DNS Server(internetsystemsconsortium/bind9:9.18)
+- 
+---------One docker compose file---------
   - Web Server(Alpine, Nginx)
   - Reverse proxy(Alpine, Nginx)
-  - DNS Server(internetsystemsconsortium/bind9:9.18)
 
   Network:
     - name: front_net
@@ -17,11 +17,12 @@ Containers:
 DNS server binds the Domain Name to the proxy server. 
 Web server by itself is completely isolated for security.
 
-for better security, you can change the owner of bind9 folder:
+for better security, you can change the owner of ./dsn_server/bind9 folder:
 sudo chown -R root:bind ./bind9
 sudo chmod -R 644 ./bind9
 
-Using the script. script version - v1.1
+Using the script. 
+script version - v1.1
 run: ./manage.py --help to see available flags for additional functionalities.
 
 flags:
@@ -36,7 +37,7 @@ flags:
    makes it difficult to access natively the web server through reverse proxy via a browser for instance. For resolving this issue, you can make custom domain for the web server in
    C:\Windows\System32\drivers\etc\hosts as specified below:
 
-	127.0.0.1   homelab.lan(or any other domain).
+	-> 127.0.0.1   homelab.lan(or any other domain).
 
    for additional testing you can access a container's terminal via docker exec -ti <container name> sh.
 !!
