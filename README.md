@@ -11,19 +11,19 @@ Containers:
   - Reverse proxy(Alpine, Nginx)
 
   Network:
-  > name - front_net
+  > name: front_net
 > 
-  > subnet - 192.168.20.0/24
+  > subnet: 192.168.20.0/24
 
 DNS server binds the Domain Name to the proxy server. 
 Web server by itself is completely isolated for security.
 
 for better security, you can change the owner of ./dsn_server/bind9 folder:
-sudo chown -R root:bind ./bind9
-sudo chmod -R 644 ./bind9
+> sudo chown -R root:bind ./bind9
+> sudo chmod -R 644 ./bind9
 
 Using the script. 
-script version - v1.1
+_script version_ - v1.1
 
 run: 
 > manage.py --help to see available flags for additional functionalities.
