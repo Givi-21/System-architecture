@@ -236,7 +236,7 @@ def main(args):
         "desktop_exec_path": desktop_exec_path,
     }
 
-    # Aggregate all commands and relate to functions.
+    # Aggregate all commands for all available functions.
     functions = {
         "status": check_status,
         "all": run_all_containers,
