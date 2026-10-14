@@ -27,7 +27,7 @@ Using the script.
 _script version_ - v1.1
 
 run: 
-> manage.py --help to see available flags for additional functionalities.
+> python(windows) manage.py or ./manage.py(Mac/Linux) --help to see available flags for additional functionalities.
 
 flags:
   - all: Run all containers.
