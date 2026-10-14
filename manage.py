@@ -18,7 +18,7 @@ import platform
 try:
     import psutil
 except ModuleNotFoundError:
-    print("One external library is needed to be intaslled.\nRun -> pip install psutil")
+    print("One external library is needed to be installed.\nRun -> pip install psutil")
 
 def get_version():
     print("version 1.1")
