@@ -3,7 +3,7 @@
 ;
 $TTL	604800
 @	IN	SOA	ns1.homelab.lan. root.homelab.lan. (
-			 202610081		; Serial - Need change after every update, so that slave servers follow it too(?)
+			 1		; Serial - Need change after every update, so that slave servers follow it too(?)
 			 604800		; Refresh
 			  86400		; Retry
 			2419200		; Expire
