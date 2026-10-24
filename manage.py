@@ -1,20 +1,24 @@
 #/*
-#   Copyright (c) 2026 (Givi) (https://github.com/Givi-21)
-#   
-#   Permission is hereby granted, free of charge, to any person obtaining a copy
-#   of this software, including without limitation the rights to use, copy, modify,
-#   merge, publish, distribute, and/or sublicense...
-#    
-#   The above copyright notice must be included in all copies or substantial 
-#   portions of the Software.
-#    
-#   SPDX-License-Identifier: MIT
+# ** Written by Givi **
 #
-#   This code works for composing and managing docker containers only.
+# COPYRIGHT NOTICE & PERMISSION NOTICE
+# Copyright (c) 2026 [ Givi / https://github.com/Givi-21 ]
 #
-#   This program requires you to install only one external library - psutil, which's responsible,
-#   in this case for identifying if docker desktop pocess is running.
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY.
+# 
 #*/
+
 
 #!/usr/bin/evn python3
 import subprocess
@@ -57,8 +61,8 @@ def get_container_metadata(exec_path, cont_name):
             return data[0] if data else None
 
         else:
-            print(f"[SYSTEM ERROR] {cont_info.stderr().strip()}")
-            return 
+            return f"[SYSTEM ERROR] {cont_info.stderr().strip()}"
+
 
     except (json.JSONDecodeError, IndexError, subprocess.SubprocessError):
         return None
@@ -106,7 +110,7 @@ def run_container(args, exec_path, containers):
         return False
 
 
-# Function for displaying essential information about a container
+# Function for displaying essential information about a containe
 def essentials(exec_path, args):
     info = {}
     metadata = get_container_metadata(exec_path, args.container)
@@ -149,8 +153,7 @@ def check_status(args, exec_path, containers):
     metadata = get_container_metadata(exec_path, args.container)
 
     if metadata is None:
-        print(f"[ERROR] Container '{args.container}' could not be inspected by engine.")
-        return False
+        return f"[ERROR] Container '{args.container}' could not be inspected by engine."
 
     is_running = metadata.get("State", {}).get("Running", False)
 
@@ -185,7 +188,6 @@ def remove_container(args, exec_path, containers):
         metadata = get_container_metadata(exec_path, args.container)
         if metadata is None:
             print(f"[ERROR] Container {args.container} doesn't exist.'")
-            return 
 
         #status_result = "".join(container_status.stdout.splitlines()).replace("'", '')
         is_running = metadata.get("State").get("Running", False)
@@ -289,8 +291,7 @@ def get_container_info():
             if info.returncode == 0:
                 cont_names.append(info.stdout.strip().replace("'", "").lstrip("/"))
             else:
-                print(f"[SYSTEM ERROR] {info.stderr}")
-                return None
+                return f"[SYSTEM ERROR] {info.stderr}"
 
     # Getting compose file paths by container names.
     containers = {}
@@ -307,8 +308,7 @@ def get_container_info():
                     formated_path = wsl_to_windows(path)
                     containers[name] = formated_path
             else:
-                print(f"[SYSTEM ERROR] {info.stdout}")
-                return False
+                return f"[SYSTEM ERROR] {info.stdout}"
 
     return containers
 
@@ -346,6 +346,9 @@ def main(args):
 
     system = platform.system()
     desktop_exec_path = system_desktop_exec_paths[system]
+
+    #meta = get_container_metadata(cli_exec_path, "web_server")
+    #print(meta.get("State").get("Running"))
 
     containers = get_container_info()
 
@@ -390,6 +393,7 @@ def main(args):
 
         # Unpacking parameters for chosen function.
         result = func_pointer(**kwargs)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
