@@ -1,5 +1,14 @@
 #/*
-#   ** Writen by Givi **
+#   Copyright (c) 2026 (Givi) (https://github.com/Givi-21)
+#   
+#   Permission is hereby granted, free of charge, to any person obtaining a copy
+#   of this software, including without limitation the rights to use, copy, modify,
+#   merge, publish, distribute, and/or sublicense...
+#    
+#   The above copyright notice must be included in all copies or substantial 
+#   portions of the Software.
+#    
+#   SPDX-License-Identifier: MIT
 #
 #   This code works for composing and managing docker containers only.
 #
@@ -24,7 +33,7 @@ except ModuleNotFoundError:
     sys.exit(1)
 
 def get_version():
-    print("version 1.2")
+    print("version 1.3")
     return
 
 def is_process_running(process):
@@ -33,10 +42,26 @@ def is_process_running(process):
             if process.lower() in proc.info["name"].lower():
                 return True
 
-        except(psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            return False
+        except(psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as err:
+            return f"[SYSTEM ERROR] {err}"
 
     return False
+
+
+def get_container_metadata(exec_path, cont_name):
+    try:
+        cont_info = subprocess.run([exec_path, "inspect", cont_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        if cont_info.returncode == 0:
+            data = json.loads(cont_info.stdout)
+            return data[0] if data else None
+
+        else:
+            print(f"[SYSTEM ERROR] {cont_info.stderr().strip()}")
+            return 
+
+    except (json.JSONDecodeError, IndexError, subprocess.SubprocessError):
+        return None
 
 
 def run_all_containers(containers, exec_path):
@@ -48,44 +73,84 @@ def run_all_containers(containers, exec_path):
 
             if running_container.returncode == 0:
                 print(f"[INFO] Container '{cont_name}' started successufully.")
+                return True
 
             else:
                 print(f"[ERROR] Failed to start '{cont_name}: {running_container.stderr.strip()}'")
+                return False
 
     except (FileNotFoundError, PermissionError) as err:
-        return f"[SYSTEM ERROR] {err}"
+        print(f"[SYSTEM ERROR] {err}")
+        return False
 
 
 def run_container(args, exec_path, containers):
     try:
         path = containers[args.container]
+        meta_data = get_container_metadata(exec_path, args.container)
 
-        # Checking if docker saved compose file paths as WSL type path.
         running_container = subprocess.run([exec_path, "compose", "-f", path, "up", "-d"],
             capture_output=True, text=True
         )
 
         if running_container.returncode == 0:
-            print(f"[INFO] Container '{args.container}' started successufully.")
-            return
+            print(f"[INFO] Container '{args.container}' started successufully.") 
+            return True
 
         else:
-            return f"[ERROR] Failed to start '{args.container}: {running_container.stderr.strip()}'"
+            print(f"[ERROR] Failed to start '{args.container}: {running_container.stderr.strip()}'")
+            return False
 
     except (FileNotFoundError, PermissionError, KeyError) as err:
-        return f"[SYSTEM ERROR] {err}"
-    
+        print(f"[SYSTEM ERROR] Unkwown argument {err}")
+        return False
+
+
+# Function for displaying essential information about a container
+def essentials(exec_path, args):
+    info = {}
+    metadata = get_container_metadata(exec_path, args.container)
+    for data, key in metadata.items():
+        info[data] = key
+
+    print(f"-----{args.container.upper()} INFO-----\n")
+    print("State: ")
+    for state, state_val in info.get("State").items():
+        print(f"   |__{state}: {state_val}")
+
+    print() 
+
+    print("Platform: ")
+    for k, v in info.get("ImageManifestDescriptor").get("platform").items():
+        print(f"   |__{k}: {v}")
+
+    print() 
+
+    print("Network: ")
+    for net_var, net_val in info.get("NetworkSettings").get("Networks").items():
+        for k, v in dict(net_val).items():
+            print(f"   |__{k}: {v}")
+
+    print()
+
+    print("Mounts: ")
+    for mount in info.get("HostConfig").get("Binds"):
+        print(f"   |__{mount}")
+
+    print()
+
+    return
+
 
 def check_status(args, exec_path, containers):
-
-    # Ensure the container is part of your tracking framework list
     if args.container not in containers:
         return f"[ERROR] Container '{args.container}' doesn't exist in configuration."
-
+    
     metadata = get_container_metadata(exec_path, args.container)
 
     if metadata is None:
-        return f"[ERROR] Container '{args.container}' could not be inspected by engine."
+        print(f"[ERROR] Container '{args.container}' could not be inspected by engine.")
+        return False
 
     is_running = metadata.get("State", {}).get("Running", False)
 
@@ -104,10 +169,15 @@ def stop_container(args, exec_path, containers):
         )
 
         if stopped_container.returncode == 0:
-            return f"[INFO] Container '{args.container}' has stopped."
+            print("[INFO] Container '{args.container}' has stopped.")
+            return True
+        else:
+            print(f"[ERROR] Container {args.container} doesn't exist")
+            return False
 
     except (FileNotFoundError, PermissionError, KeyError) as err:
-        return f"[ERROR] {err}"
+        print(f"[ERROR] {err}")
+        return False
 
 
 def remove_container(args, exec_path, containers):
@@ -115,6 +185,7 @@ def remove_container(args, exec_path, containers):
         metadata = get_container_metadata(exec_path, args.container)
         if metadata is None:
             print(f"[ERROR] Container {args.container} doesn't exist.'")
+            return 
 
         #status_result = "".join(container_status.stdout.splitlines()).replace("'", '')
         is_running = metadata.get("State").get("Running", False)
@@ -125,10 +196,13 @@ def remove_container(args, exec_path, containers):
         removed_container = subprocess.run([exec_path, "rm", args.container], capture_output=True)
 
         if removed_container.returncode == 0:
-            return f"[INFO] Container {args.container} has been removed."
+            print(f"[INFO] Container {args.container} has been removed.")
+            return True
+
         else:
             error_msg = removed_container.stderr().decode().strip()
-            return f"[ERROR] Error has occured: {error_msg}"
+            print(f"[ERROR] Error has occured: {error_msg}")
+            return False 
 
     except (FileNotFoundError, PermissionError, subprocess.SubprocessError) as err:
         return f"[SYSTEM ERROR] {err}"
@@ -149,14 +223,16 @@ def remove_all_containers(exec_path, containers):
 
                 if removed_container.returncode == 0:
                     print(f"[INFO] Container '{cont_name}' has been removed.")
+                    return True
 
                 else:
                     print(f"[ERROR] Failed to remove '{cont_name}: {removed_container.stderr.strip()}'")
+                    return False
         return
 
     except (FileNotFoundError, PermissionError) as err:
-        return f"[SYSTEM ERROR] {err}"
-
+        print(f"[SYSTEM ERROR] {err}")
+        return False
 
 
 def stop_all_containers(containers, exec_path):
@@ -168,36 +244,11 @@ def stop_all_containers(containers, exec_path):
 
             if stopped_container.returncode == 0:
                 print(f"[INFO] Container '{cont_name}' has stoped.")
+                return True
 
         except (FileNotFoundError, PermissionError) as err:
-            return f"[ERROR] {err}"
-
-
-def run_base_process(containers, cli_exec_path, desktop_exec_path):
-    start_time = time.time()
-    max_time = 30
-
-    exec_path_ready = False
-
-    if not exec_path_ready:
-        while time.time() - start_time < 30:
-            process = subprocess.Popen([desktop_exec_path], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-            process_status = process.poll()
-
-            if process_status is not None:
-                print("[ERROR] Failed to start docker...")
-                break
-
-            result = subprocess.run([cli_exec_path, "info"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-            if result.returncode == 0:
-                exec_path_ready = True
-                print("[INFO] Docker is ready to work!")
-                break
-
-            # Wait a bit just in case before checking again
-            time.sleep(0.5)
-    else:
-        print("[INFO] The process is already running.")
+            print(f"[ERROR] {err}")
+            return False
 
 
 def list_containers(containers):
@@ -238,7 +289,8 @@ def get_container_info():
             if info.returncode == 0:
                 cont_names.append(info.stdout.strip().replace("'", "").lstrip("/"))
             else:
-                return f"[SYSTEM ERROR] {info.stderr}"
+                print(f"[SYSTEM ERROR] {info.stderr}")
+                return None
 
     # Getting compose file paths by container names.
     containers = {}
@@ -255,9 +307,31 @@ def get_container_info():
                     formated_path = wsl_to_windows(path)
                     containers[name] = formated_path
             else:
-                return f"[SYSTEM ERROR] {info.stdout}"
+                print(f"[SYSTEM ERROR] {info.stdout}")
+                return False
 
     return containers
+
+
+def run_base_process(containers, cli_exec_path, desktop_exec_path):
+    start_time = time.time()
+    max_time = 30
+
+    while time.time() - start_time < 30:
+        process = subprocess.Popen([desktop_exec_path], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+        process_status = process.poll()
+
+        if process_status is not None:
+            print("[ERROR] Failed to start docker...")
+            break
+
+        result = subprocess.run([cli_exec_path, "info"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+        if result.returncode == 0:
+            print("[INFO] Docker is ready to work!")
+            break
+
+        # Wait a bit just in case before checking again
+        time.sleep(0.5)
 
 
 def main(args):
@@ -270,14 +344,8 @@ def main(args):
         "Windows": "C:\\Users\\user\\AppData\\Local\\Programs\\DockerDesktop\\Docker Desktop.exe"
     }
 
-    desktop_exec_path = ""
     system = platform.system()
-
-    try:
-        if system in system_desktop_exec_paths:
-            desktop_exec_path = system_desktop_exec_paths[system]
-    except FileNotFoundError:
-        print(f"{desktop_exec_path} couldn't be found...")
+    desktop_exec_path = system_desktop_exec_paths[system]
 
     containers = get_container_info()
 
@@ -289,28 +357,29 @@ def main(args):
         "desktop_exec_path": desktop_exec_path,
     }
 
-    # Aggregate all commands and relate to functions.
+    # Each subcommand releated to it's appropriate funciton
     functions = {
-        "status": check_status,
+        "status":    check_status,
         "start_all": run_all_containers,
-        "start": run_container,
-        "list": list_containers,
-        "stop": stop_container,
-        "stop_all": stop_all_containers,
-        "rm": remove_container,
-        "rm_all": remove_all_containers,
-        "version": get_version
+        "start":     run_container,
+        "list":      list_containers,
+        "stop":      stop_container,
+        "stop_all":  stop_all_containers,
+        "rm":        remove_container,
+        "rm_all":    remove_all_containers,
+        "info":      essentials,
+        "version":   get_version
     }
 
-    # Docker Desktop process
+    # Docker-desktop process: com.docker.backend
     running = is_process_running(system_desktop_exec_paths[system])
 
-    # If no arguments were provided, run docker desktop by default.
-    if args.command is None and not running:
+    # If no arguments were provided, run docker-desktop by default.
+    if args.command is None or running:
         run_base_process(containers, cli_exec_path, desktop_exec_path)
 
     else:
-        # Dynamically identifying which function runs and which arguemnts will be used for that function.
+        # Dynamically identify which function runs and which arguemnts will be used for that function.
         func_pointer = functions[args.command] # Getting pointer to the function.
         func_signature = inspect.signature(func_pointer) # Getting parameters of the function.
 
@@ -324,7 +393,8 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Custom script to safely run all containers and check for applied security settings.",
+        description="Custom script for managing all docker containers.",
+        epilog="The script runs docker by default if no subcommand was given.",
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
@@ -344,8 +414,8 @@ if __name__ == "__main__":
     show_version = subparsers.add_parser("version", help="Get current version of the program")
     show_version.set_defaults(func=get_version)
 
-    start_all_parser = subparsers.add_parser("start_all", help="Run all containers sequentially.")
-    start_all_parser.set_defaults(func=run_all_containers)
+    start_all_objects = subparsers.add_parser("start_all", help="Run all containers sequentially.")
+    start_all_objects.set_defaults(func=run_all_containers)
 
     list_objects = subparsers.add_parser("list", help="List all available containers.")
     list_objects.set_defaults(func=list_containers)
@@ -359,11 +429,14 @@ if __name__ == "__main__":
     remove_all_objects = subparsers.add_parser("rm_all", help="Remove all containers.")
     remove_all_objects.set_defaults(func=remove_all_containers)
 
-    stop_all_object = subparsers.add_parser("stop_all", help="Stop a container.")
-    stop_all_object.set_defaults(func=stop_all_containers)
+    stop_all_objects = subparsers.add_parser("stop_all", help="Stop all containers.")
+    stop_all_objects.set_defaults(func=stop_all_containers)
 
-    start_single_process = subparsers.add_parser("start", parents=[base_argument], help="Start a container.")
+    start_single_object = subparsers.add_parser("start", parents=[base_argument], help="Start a container.")
     status = subparsers.add_parser("status", parents=[base_argument], help="Check the status of a container.")
+
+    info = subparsers.add_parser("info", parents=[base_argument], help="Display essential information about a container, including [State, Network, Platform, Mounts]")
+    info.set_defaults(func=essentials)
 
     args = parser.parse_args()
     main(args)
