@@ -2,7 +2,7 @@
 ## System architecture & Instruction for deploying ##
 
 The project includes a container with two images:
-| Image |   | Usage |
+| Image     | Usage |
 | --------- | ------------------------ |
 | `traefik` | Used as the proxy server |
 | `nginx`   | Used as the web server   |
@@ -18,7 +18,7 @@ subnet **192.168.20.0/24**
 
 Can you make a diagram for readme in github?
 
-| Subcommand |    | Meaning | 
+| Subcommand      | Meaning | 
 | ------------    | ------------------------------------------------------------ | 
 | `version`       |   Get current version of the program.   					           |
 | `start_all`     |   Run all containers sequentially.      					           |
