@@ -29,7 +29,6 @@ Can you make a diagram for readme in github?
 | `stop_all`      |   Stop all containers.				  					                   | 
 | `start`         |   Start a container. 				      					                 |	  
 | `status`        |   Check the status of a container.      					           |
-| `info`          |   Display essential information about a container, including 
-                      [State, Network, Platform, Mounts]                         |
+| `info`          |   Display essential information about a container, including [State, Network, Platform, Mounts] |                         |
 
 > Current version of the script is v1.3
