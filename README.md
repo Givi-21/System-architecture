@@ -8,15 +8,28 @@ The project includes a container with two images:
 | `nginx`   | Used as the web server   |
 
 ## Docker network ##
-The name of the network is **front_net** for docker containers.
-Only exposed ports are 80 and 8080 for traefik image only. Web server is isolated. 
-> 80 for web and 8080 for traefik default local diagram page.
+Name of the network for containers' called **front_net** with bridge mode.
+Only exposed ports are 80 for web and 8080 for proxy only. Web server is isolated. 
 
-subnet **192.168.20.0/24**
+Subnet: **192.168.20.0/24**
 
 ## Using the python script ##
+run command line as shown below to see available containers:
+```shell
+$ python3 manage.py list
 
-Can you make a diagram for readme in github?
+traefik_proxy_server
+    |__Running: False
+    |__/home/user/Documents/Projects/Docker/web_app/docker-compose.yml
+
+web_server
+    |__Running: False
+    |__/home/user/Documents/Projects/Docker/web_app/docker-compose.yml
+```
+
+You can proceed with corresponding operations as shown below.
+> Running one container causes to run all two of them as they are dependent upon each other.
+> See the docker-compose.yml file for more information.
 
 | Subcommand      | Meaning | 
 | ------------    | ------------------------------------------------------------ | 
