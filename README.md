@@ -7,6 +7,11 @@ The project includes a container with two images:
 | `traefik` | Used as the proxy server |
 | `nginx`   | Used as the web server   |
 
+Compose the container inside the directory where docker-compose.yml file is located:
+```
+docker compose up -d
+```
+
 ## Docker network ##
 Name of the network for containers' called **front_net** with bridge mode.
 Only exposed ports are 80 for web and 8080 for proxy only. Web server is isolated. 
