@@ -15,6 +15,8 @@ Subnet: **192.168.20.0/24**
 
 ## Using the python script ##
 run command line as shown below to see available containers:
+> For running the script you need to create virtual environment for python to install Psutil library.
+> After creating it run: pip install psutil. 
 ```shell
 $ python3 manage.py list
 
